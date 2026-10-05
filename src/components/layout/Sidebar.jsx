@@ -30,9 +30,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         />
       )}
 
-      {/* Sidebar container */}
+      {/* Sidebar container - STICKY on desktop */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white/75 backdrop-blur-2xl border-r border-indigo-100/80 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 bg-white/80 backdrop-blur-2xl border-r border-indigo-100/80 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-[65px] lg:h-[calc(100vh-65px)] lg:z-20 shrink-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
