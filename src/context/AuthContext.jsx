@@ -9,19 +9,9 @@ const DEFAULT_USERS = [
     name: 'Alex Morgan',
     email: 'admin@courier.com',
     password: 'password123',
-    role: 'Admin Dispatcher',
+    role: 'Courier Staff',
     phone: '+1 (555) 019-2834',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'usr-2',
-    name: 'Sarah Connor',
-    email: 'sarah@courier.com',
-    password: 'password123',
-    role: 'Logistics Manager',
-    phone: '+1 (555) 018-4421',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
     createdAt: new Date().toISOString()
   }
 ];
@@ -31,9 +21,7 @@ export const AuthProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Initialize Auth state & LocalStorage database
   useEffect(() => {
-    // Load registered users database
     const storedUsers = localStorage.getItem('courier_users');
     if (!storedUsers) {
       localStorage.setItem('courier_users', JSON.stringify(DEFAULT_USERS));
@@ -46,7 +34,6 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    // Load active session user
     const sessionUser = localStorage.getItem('courier_auth_user');
     if (sessionUser) {
       try {
@@ -58,13 +45,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Save users list to LocalStorage whenever modified
   const updateUsersList = (newUsersList) => {
     setUsers(newUsersList);
     localStorage.setItem('courier_users', JSON.stringify(newUsersList));
   };
 
-  // Login handler
   const login = (email, password) => {
     const user = users.find(
       (u) => u.email.toLowerCase() === email.toLowerCase().trim() && u.password === password
@@ -75,7 +60,7 @@ export const AuthProvider = ({ children }) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role || 'Staff Member',
+        role: 'Courier Staff',
         phone: user.phone || '',
         avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=fff`,
         loginTime: new Date().toISOString()
@@ -85,12 +70,11 @@ export const AuthProvider = ({ children }) => {
       toast.success(`Welcome back, ${user.name}!`);
       return { success: true };
     } else {
-      toast.error('Invalid email or password. Try admin@courier.com / password123');
+      toast.error('Invalid credentials. Try admin@courier.com / password123');
       return { success: false, message: 'Invalid credentials' };
     }
   };
 
-  // Register new user
   const register = (userData) => {
     const existing = users.find(
       (u) => u.email.toLowerCase() === userData.email.toLowerCase().trim()
@@ -106,16 +90,15 @@ export const AuthProvider = ({ children }) => {
       name: userData.name.trim(),
       email: userData.email.toLowerCase().trim(),
       password: userData.password,
-      role: userData.role || 'Courier Staff',
+      role: 'Courier Staff',
       phone: userData.phone || '',
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=4f46e5&color=fff`,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name)}&background=6366f1&color=fff`,
       createdAt: new Date().toISOString()
     };
 
     const updated = [...users, newUser];
     updateUsersList(updated);
 
-    // Auto login after successful registration
     const sessionData = {
       id: newUser.id,
       name: newUser.name,
@@ -128,18 +111,17 @@ export const AuthProvider = ({ children }) => {
 
     setCurrentUser(sessionData);
     localStorage.setItem('courier_auth_user', JSON.stringify(sessionData));
-    toast.success('Account registered successfully! Welcome aboard.');
+    toast.success('Account created successfully! Welcome to SwiftTrack.');
     return { success: true };
   };
 
-  // Forgot password / Reset password
   const resetPassword = (email, newPassword) => {
     const index = users.findIndex(
       (u) => u.email.toLowerCase() === email.toLowerCase().trim()
     );
 
     if (index === -1) {
-      toast.error('No account found with this email address.');
+      toast.error('No account found with this email.');
       return { success: false };
     }
 
@@ -147,15 +129,14 @@ export const AuthProvider = ({ children }) => {
     updatedUsers[index].password = newPassword;
     updateUsersList(updatedUsers);
 
-    toast.success('Password reset successfully! You can now log in.');
+    toast.success('Password updated successfully!');
     return { success: true };
   };
 
-  // Logout handler
   const logout = () => {
     setCurrentUser(null);
     localStorage.removeItem('courier_auth_user');
-    toast.info('You have logged out successfully.');
+    toast.info('Logged out successfully.');
   };
 
   return (

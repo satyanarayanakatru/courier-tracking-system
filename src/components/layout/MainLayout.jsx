@@ -7,7 +7,7 @@ const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col antialiased">
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
       
       <div className="flex flex-1">
