@@ -30,7 +30,7 @@ const Navbar = ({ onToggleSidebar }) => {
     };
   }, []);
 
-  // Close dropdown on click outside
+  // Close profile dropdown on click or touch outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -38,8 +38,10 @@ const Navbar = ({ onToggleSidebar }) => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, []);
 
@@ -112,7 +114,7 @@ const Navbar = ({ onToggleSidebar }) => {
         {/* User Profile Dropdown Container with Ref */}
         <div className="relative" ref={dropdownRef}>
           <button
-            onClick={() => setShowDropdown(!showDropdown)}
+            onClick={() => setShowDropdown((prev) => !prev)}
             className="flex items-center space-x-3 p-1.5 rounded-2xl hover:bg-emerald-50 transition-colors focus:outline-none cursor-pointer"
           >
             <img
@@ -133,40 +135,48 @@ const Navbar = ({ onToggleSidebar }) => {
 
           <AnimatePresence>
             {showDropdown && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 py-2 divide-y divide-slate-100"
-              >
-                <div className="px-4 py-3">
-                  <p className="text-sm font-black text-slate-900">{currentUser?.name}</p>
-                  <p className="text-xs text-slate-500 truncate">{currentUser?.email}</p>
-                  <span className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <ShieldCheck className="w-3 h-3" /> Courier Staff
-                  </span>
-                </div>
+              <>
+                {/* Transparent overlay for instant click-outside closing */}
+                <div
+                  className="fixed inset-0 z-40 bg-transparent"
+                  onClick={() => setShowDropdown(false)}
+                />
 
-                <div className="py-1">
-                  <div className="px-4 py-2 text-xs text-slate-500">
-                    Phone: <span className="text-slate-900 font-bold">{currentUser?.phone || 'N/A'}</span>
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-2xl z-50 py-2 divide-y divide-slate-100"
+                >
+                  <div className="px-4 py-3">
+                    <p className="text-sm font-black text-slate-900">{currentUser?.name}</p>
+                    <p className="text-xs text-slate-500 truncate">{currentUser?.email}</p>
+                    <span className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <ShieldCheck className="w-3 h-3" /> Courier Staff
+                    </span>
                   </div>
-                </div>
 
-                <div className="py-1">
-                  <button
-                    onClick={() => {
-                      setShowDropdown(false);
-                      logout();
-                    }}
-                    className="w-full flex items-center space-x-2.5 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Log Out</span>
-                  </button>
-                </div>
-              </motion.div>
+                  <div className="py-1">
+                    <div className="px-4 py-2 text-xs text-slate-500">
+                      Phone: <span className="text-slate-900 font-bold">{currentUser?.phone || 'N/A'}</span>
+                    </div>
+                  </div>
+
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        setShowDropdown(false);
+                        logout();
+                      }}
+                      className="w-full flex items-center space-x-2.5 px-4 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Log Out</span>
+                    </button>
+                  </div>
+                </motion.div>
+              </>
             )}
           </AnimatePresence>
         </div>
