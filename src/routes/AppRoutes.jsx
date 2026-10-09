@@ -12,7 +12,8 @@ import DashboardPage from '../pages/DashboardPage';
 import ShipmentsPage from '../pages/ShipmentsPage';
 import ShipmentViewPage from '../pages/ShipmentViewPage';
 import CustomersPage from '../pages/CustomersPage';
-import { TrackingPage, StatusPage, NotificationsPage, ReportsPage } from '../pages/OtherPages';
+import ParcelTrackingPage from '../pages/ParcelTrackingPage';
+import { StatusPage, NotificationsPage, ReportsPage } from '../pages/OtherPages';
 
 const AppRoutes = () => {
   return (
@@ -31,7 +32,7 @@ const AppRoutes = () => {
           <Route path="/shipments" element={<ShipmentsPage />} />
           <Route path="/shipments/details/:trackingNumber" element={<ShipmentViewPage />} />
           <Route path="/customers" element={<CustomersPage />} />
-          <Route path="/tracking" element={<TrackingPage />} />
+          <Route path="/tracking" element={<ParcelTrackingPage />} />
           <Route path="/status" element={<StatusPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/reports" element={<ReportsPage />} />
