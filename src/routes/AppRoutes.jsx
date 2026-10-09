@@ -10,6 +10,7 @@ import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 
 import DashboardPage from '../pages/DashboardPage';
 import ShipmentsPage from '../pages/ShipmentsPage';
+import ShipmentViewPage from '../pages/ShipmentViewPage';
 import CustomersPage from '../pages/CustomersPage';
 import { TrackingPage, StatusPage, NotificationsPage, ReportsPage } from '../pages/OtherPages';
 
@@ -28,6 +29,7 @@ const AppRoutes = () => {
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/shipments" element={<ShipmentsPage />} />
+          <Route path="/shipments/details/:trackingNumber" element={<ShipmentViewPage />} />
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
           <Route path="/status" element={<StatusPage />} />

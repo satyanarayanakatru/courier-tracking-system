@@ -4,9 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
 import { 
-  Mail, Lock, KeyRound, ArrowRight, ArrowLeft, CheckCircle2, Eye, EyeOff 
+  PackageCheck, Mail, Lock, KeyRound, ArrowRight, ArrowLeft, CheckCircle2, Eye, EyeOff, ShieldCheck, Leaf 
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import bgImage from '../../assets/courier_login_bg.jpg';
 
 const ForgotPasswordPage = () => {
   const { resetPassword, users } = useAuth();
@@ -60,205 +61,245 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-indigo-50/70 to-purple-100/60 flex items-center justify-center p-4 sm:p-6 lg:p-10 relative overflow-hidden font-sans">
-      <div className="absolute bottom-10 left-10 w-96 h-96 bg-gradient-to-r from-indigo-300/30 to-purple-300/30 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen w-full relative flex items-center justify-center p-4 sm:p-6 lg:p-12 overflow-hidden font-sans select-none">
+      <img 
+        src={bgImage} 
+        alt="Courier & Logistics Hero Background" 
+        className="absolute inset-0 w-full h-full object-cover object-center scale-105"
+      />
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.96, y: 15 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md glass-card p-8 sm:p-10 rounded-3xl z-10 space-y-6"
-      >
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/30 mb-2">
-            <KeyRound className="w-7 h-7" />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-900/40 to-slate-950/20 backdrop-blur-[1px]" />
+
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 items-center gap-8 relative z-10">
+        
+        {/* LEFT SIDE: Hero Text */}
+        <motion.div 
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="lg:col-span-7 text-white space-y-6 px-4 lg:px-6"
+        >
+          <div className="inline-flex items-center space-x-2.5 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30 text-xs font-bold shadow-lg">
+            <KeyRound className="w-5 h-5 text-emerald-400" />
+            <span className="text-white tracking-wide">SwiftTrack Security</span>
+            <span className="text-emerald-300 font-semibold">• Password Recovery</span>
           </div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-            Reset Password
-          </h2>
-          <p className="text-xs text-slate-500 font-medium">
-            Step {step} of 3: {step === 1 ? 'Enter Email' : step === 2 ? 'Enter Verification Code' : 'Create New Password'}
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-white drop-shadow-xl">
+            Account Access <br />
+            <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-sky-300 bg-clip-text text-transparent flex items-center gap-3">
+              Recovery <Leaf className="w-10 h-10 text-emerald-400 inline-block animate-bounce" />
+            </span>
+          </h1>
+
+          <p className="text-base sm:text-lg text-slate-100 font-medium max-w-xl leading-relaxed drop-shadow-md">
+            Easily reset your account password using verification code OTP authentication.
           </p>
-        </div>
 
-        {/* STEP 1 */}
-        {step === 1 && (
-          <form className="space-y-4" onSubmit={emailForm.handleSubmit(handleEmailSubmit)}>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                Registered Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="h-4.5 w-4.5" />
-                </div>
-                <input
-                  type="email"
-                  {...emailForm.register('email', {
-                    required: 'Email address is required',
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Invalid email address',
-                    },
-                  })}
-                  placeholder="admin@courier.com"
-                  className="w-full glass-input rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-600/10 transition-all"
-                />
-              </div>
-              {emailForm.formState.errors.email && (
-                <p className="mt-1.5 text-xs text-red-500 font-bold">
-                  {emailForm.formState.errors.email.message}
-                </p>
-              )}
+          <div className="pt-2 flex flex-wrap gap-3">
+            <div className="flex items-center space-x-2.5 px-4 py-2.5 bg-slate-900/60 backdrop-blur-md rounded-2xl border border-white/20 text-xs font-bold shadow-lg">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>Secure 2-Factor OTP Verification</span>
             </div>
+          </div>
+        </motion.div>
 
-            <motion.button
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.985 }}
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full flex items-center justify-center space-x-2 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-xl shadow-indigo-600/30 transition-all disabled:opacity-50 cursor-pointer"
+        {/* RIGHT SIDE: Floating Glass Auth Card */}
+        <motion.div 
+          initial={{ opacity: 0, x: 40, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          transition={{ duration: 0.7, ease: 'easeOut', delay: 0.1 }}
+          className="lg:col-span-5 ml-auto w-full max-w-md bg-white/85 backdrop-blur-2xl rounded-[2.2rem] p-6 sm:p-8 border border-white/90 shadow-2xl shadow-slate-950/20 space-y-5"
+        >
+          <div className="text-center space-y-1.5">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 mb-1">
+              <KeyRound className="w-6 h-6" />
+            </div>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+              Reset Password
+            </h2>
+            <p className="text-xs text-slate-500 font-medium">
+              Step {step} of 3: {step === 1 ? 'Enter Email' : step === 2 ? 'Enter Code' : 'Set New Password'}
+            </p>
+          </div>
+
+          {/* Mode Switcher */}
+          <div className="grid grid-cols-3 gap-1 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 text-xs font-bold text-slate-600">
+            <button
+              type="button"
+              onClick={() => navigate('/login')}
+              className="py-2 rounded-xl hover:bg-slate-200/80 text-center transition-colors cursor-pointer"
             >
-              <span>{isSubmitting ? 'Sending Code...' : 'Send Verification Code'}</span>
-              <ArrowRight className="w-4.5 h-4.5" />
-            </motion.button>
-          </form>
-        )}
+              Login
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className="py-2 rounded-xl hover:bg-slate-200/80 text-center transition-colors cursor-pointer"
+            >
+              Register
+            </button>
+            <button
+              type="button"
+              className="py-2 rounded-xl bg-emerald-600 text-white shadow-xs text-center font-extrabold"
+            >
+              Reset
+            </button>
+          </div>
 
-        {/* STEP 2 */}
-        {step === 2 && (
-          <form className="space-y-4" onSubmit={otpForm.handleSubmit(handleOtpSubmit)}>
-            <div className="p-3 bg-indigo-50/80 backdrop-blur-md border border-indigo-200/80 rounded-xl text-xs text-indigo-900 font-medium">
-              A 6-digit code was sent to <span className="font-black text-indigo-950">{emailInput}</span>.
-              <br />
-              <span className="font-mono text-amber-700 font-bold">Demo OTP Code: 123456</span>
-            </div>
+          {/* STEP 1 */}
+          {step === 1 && (
+            <form className="space-y-4" onSubmit={emailForm.handleSubmit(handleEmailSubmit)}>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Registered Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+                  <input
+                    type="email"
+                    {...emailForm.register('email', {
+                      required: 'Email address is required',
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Invalid email address',
+                      },
+                    })}
+                    placeholder="Enter your email address"
+                    className="w-full glass-input rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-emerald-600/10 transition-all"
+                  />
+                </div>
+                {emailForm.formState.errors.email && (
+                  <p className="mt-1 text-xs text-red-500 font-bold">
+                    {emailForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                Verification Code (OTP)
-              </label>
-              <input
-                type="text"
-                maxLength={6}
-                {...otpForm.register('otp', {
-                  required: 'Verification code is required',
-                  minLength: { value: 6, message: '6-digit code required' },
-                })}
-                placeholder="123456"
-                className="w-full text-center tracking-widest font-mono text-lg glass-input rounded-xl py-2.5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-600/10"
-              />
-              {otpForm.formState.errors.otp && (
-                <p className="mt-1.5 text-xs text-red-500 font-bold">
-                  {otpForm.formState.errors.otp.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="w-1/3 flex items-center justify-center space-x-1.5 py-3 px-3 rounded-xl text-xs font-bold text-slate-700 glass-input hover:bg-slate-200/80 transition-colors"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Back</span>
-              </button>
               <button
                 type="submit"
-                className="w-2/3 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-xl shadow-indigo-600/30 transition-all cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-xl shadow-emerald-600/25 transition-all cursor-pointer"
               >
-                <span>Verify Code</span>
-                <CheckCircle2 className="w-4 h-4" />
+                <span>{isSubmitting ? 'Sending Code...' : 'Send Verification Code'}</span>
+                <ArrowRight className="w-4.5 h-4.5" />
               </button>
-            </div>
-          </form>
-        )}
+            </form>
+          )}
 
-        {/* STEP 3 */}
-        {step === 3 && (
-          <form className="space-y-4" onSubmit={resetForm.handleSubmit(handleResetSubmit)}>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                New Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="h-4.5 w-4.5" />
-                </div>
+          {/* STEP 2 */}
+          {step === 2 && (
+            <form className="space-y-4" onSubmit={otpForm.handleSubmit(handleOtpSubmit)}>
+              <div className="p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-xl text-xs text-slate-700 font-medium">
+                OTP sent to <span className="font-bold text-slate-900">{emailInput}</span>.
+                <br />
+                <span className="font-mono text-amber-700 font-bold">Demo OTP Code: 123456</span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Verification Code (OTP)
+                </label>
                 <input
-                  type={showPassword ? 'text' : 'password'}
-                  {...resetForm.register('newPassword', {
-                    required: 'New password required',
-                    minLength: { value: 6, message: 'Min 6 characters' },
+                  type="text"
+                  maxLength={6}
+                  {...otpForm.register('otp', {
+                    required: 'Verification code is required',
+                    minLength: { value: 6, message: '6-digit code required' },
                   })}
-                  placeholder="••••••••"
-                  className="w-full glass-input rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-600/10"
+                  placeholder="123456"
+                  className="w-full text-center tracking-widest font-mono text-lg glass-input rounded-xl py-2.5 text-slate-900 focus:outline-none focus:ring-4 focus:ring-emerald-600/10"
                 />
+              </div>
+
+              <div className="flex gap-2.5">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                  onClick={() => setStep(1)}
+                  className="w-1/3 flex items-center justify-center space-x-1 py-3 px-3 rounded-xl text-xs font-bold text-slate-700 glass-input hover:bg-slate-200/80 transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+                <button
+                  type="submit"
+                  className="w-2/3 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-xl shadow-emerald-600/25 transition-all cursor-pointer"
+                >
+                  <span>Verify Code</span>
+                  <CheckCircle2 className="w-4 h-4" />
                 </button>
               </div>
-              {resetForm.formState.errors.newPassword && (
-                <p className="mt-1 text-xs text-red-500 font-bold">
-                  {resetForm.formState.errors.newPassword.message}
-                </p>
-              )}
-            </div>
+            </form>
+          )}
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Confirm New Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="h-4.5 w-4.5" />
+          {/* STEP 3 */}
+          {step === 3 && (
+            <form className="space-y-4" onSubmit={resetForm.handleSubmit(handleResetSubmit)}>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  New Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    {...resetForm.register('newPassword', {
+                      required: 'Required',
+                      minLength: { value: 6, message: 'Min 6 chars' },
+                    })}
+                    placeholder="••••••••"
+                    className="w-full glass-input rounded-xl pl-10 pr-10 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-emerald-600/10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
-                <input
-                  type="password"
-                  {...resetForm.register('confirmPassword', {
-                    required: 'Please confirm password',
-                    validate: (val) =>
-                      val === resetForm.watch('newPassword') || 'Passwords do not match',
-                  })}
-                  placeholder="••••••••"
-                  className="w-full glass-input rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-indigo-600/10"
-                />
               </div>
-              {resetForm.formState.errors.confirmPassword && (
-                <p className="mt-1 text-xs text-red-500 font-bold">
-                  {resetForm.formState.errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
 
-            <motion.button
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.985 }}
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full flex items-center justify-center space-x-2 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-xl shadow-emerald-600/30 transition-all disabled:opacity-50 cursor-pointer"
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+                  <input
+                    type="password"
+                    {...resetForm.register('confirmPassword', {
+                      required: 'Required',
+                      validate: (val) => val === resetForm.watch('newPassword') || 'No match',
+                    })}
+                    placeholder="••••••••"
+                    className="w-full glass-input rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-emerald-600/10"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-xl shadow-emerald-600/25 transition-all cursor-pointer"
+              >
+                <span>{isSubmitting ? 'Updating...' : 'Set New Password'}</span>
+                <CheckCircle2 className="w-4.5 h-4.5" />
+              </button>
+            </form>
+          )}
+
+          <div className="text-center pt-1">
+            <Link
+              to="/login"
+              className="inline-flex items-center space-x-1.5 text-xs text-slate-500 font-bold hover:text-slate-800 transition-colors"
             >
-              <span>{isSubmitting ? 'Updating...' : 'Set New Password'}</span>
-              <CheckCircle2 className="w-4.5 h-4.5" />
-            </motion.button>
-          </form>
-        )}
-
-        <div className="text-center pt-2">
-          <Link
-            to="/login"
-            className="inline-flex items-center space-x-1.5 text-xs text-slate-500 font-bold hover:text-slate-800 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to Login</span>
-          </Link>
-        </div>
-      </motion.div>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Return to Login</span>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };

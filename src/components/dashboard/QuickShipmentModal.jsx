@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Package, MapPin, User, Calendar, Weight, CheckCircle2 } from 'lucide-react';
+import { X, Package, MapPin, User, Weight, CheckCircle2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
@@ -33,7 +33,6 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
       deliveryStatus: 'Pending',
     };
 
-    // Store in LocalStorage if available
     const existing = JSON.parse(localStorage.getItem('courier_shipments') || '[]');
     localStorage.setItem('courier_shipments', JSON.stringify([newShipment, ...existing]));
 
@@ -46,7 +45,6 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -55,17 +53,15 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
           className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
         />
 
-        {/* Modal Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 15 }}
           className="relative w-full max-w-lg glass-card rounded-3xl p-6 sm:p-8 z-10 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-indigo-100 pb-4">
+          <div className="flex items-center justify-between border-b border-emerald-100 pb-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md">
                 <Package className="w-5 h-5" />
               </div>
               <div>
@@ -82,7 +78,6 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Sender & Receiver */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -94,7 +89,7 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
                     type="text"
                     {...register('senderName', { required: 'Sender name is required' })}
                     placeholder="John Sender"
-                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20"
+                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   />
                 </div>
                 {errors.senderName && <p className="mt-1 text-xs text-red-500 font-bold">{errors.senderName.message}</p>}
@@ -110,14 +105,13 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
                     type="text"
                     {...register('receiverName', { required: 'Receiver name is required' })}
                     placeholder="Alice Receiver"
-                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20"
+                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   />
                 </div>
                 {errors.receiverName && <p className="mt-1 text-xs text-red-500 font-bold">{errors.receiverName.message}</p>}
               </div>
             </div>
 
-            {/* Pickup & Delivery Address */}
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -129,7 +123,7 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
                     type="text"
                     {...register('pickupAddress', { required: 'Pickup address required' })}
                     placeholder="123 Main St, New York, NY"
-                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20"
+                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   />
                 </div>
                 {errors.pickupAddress && <p className="mt-1 text-xs text-red-500 font-bold">{errors.pickupAddress.message}</p>}
@@ -145,14 +139,13 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
                     type="text"
                     {...register('deliveryAddress', { required: 'Delivery address required' })}
                     placeholder="456 Market St, San Francisco, CA"
-                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20"
+                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   />
                 </div>
                 {errors.deliveryAddress && <p className="mt-1 text-xs text-red-500 font-bold">{errors.deliveryAddress.message}</p>}
               </div>
             </div>
 
-            {/* Parcel Type & Weight */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -160,7 +153,7 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
                 </label>
                 <select
                   {...register('parcelType')}
-                  className="w-full glass-input rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600/20"
+                  className="w-full glass-input rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                 >
                   <option value="Standard Parcel">Standard Parcel</option>
                   <option value="Document Express">Document Express</option>
@@ -180,13 +173,12 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
                     step="0.1"
                     {...register('weight', { required: 'Weight is required' })}
                     placeholder="2.5"
-                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600/20"
+                    className="w-full glass-input rounded-xl pl-9 pr-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600/20"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Submit */}
             <div className="pt-2 flex justify-end space-x-3">
               <button
                 type="button"
@@ -197,7 +189,7 @@ const QuickShipmentModal = ({ isOpen, onClose, onCreated }) => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md shadow-indigo-600/20 transition-all flex items-center space-x-2"
+                className="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-md shadow-emerald-600/20 transition-all flex items-center space-x-2"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Dispatch Shipment</span>
