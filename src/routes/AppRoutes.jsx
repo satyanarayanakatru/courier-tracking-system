@@ -13,7 +13,8 @@ import ShipmentsPage from '../pages/ShipmentsPage';
 import ShipmentViewPage from '../pages/ShipmentViewPage';
 import CustomersPage from '../pages/CustomersPage';
 import ParcelTrackingPage from '../pages/ParcelTrackingPage';
-import { StatusPage, NotificationsPage, ReportsPage } from '../pages/OtherPages';
+import DeliveryStatusPage from '../pages/DeliveryStatusPage';
+import { NotificationsPage, ReportsPage } from '../pages/OtherPages';
 
 const AppRoutes = () => {
   return (
@@ -33,7 +34,7 @@ const AppRoutes = () => {
           <Route path="/shipments/details/:trackingNumber" element={<ShipmentViewPage />} />
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/tracking" element={<ParcelTrackingPage />} />
-          <Route path="/status" element={<StatusPage />} />
+          <Route path="/status" element={<DeliveryStatusPage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/reports" element={<ReportsPage />} />
         </Route>
