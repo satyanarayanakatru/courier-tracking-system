@@ -15,7 +15,7 @@ import CustomersPage from '../pages/CustomersPage';
 import ParcelTrackingPage from '../pages/ParcelTrackingPage';
 import DeliveryStatusPage from '../pages/DeliveryStatusPage';
 import NotificationsPage from '../pages/NotificationsPage';
-import { ReportsPage } from '../pages/OtherPages';
+import ReportsPage from '../pages/ReportsPage';
 
 const AppRoutes = () => {
   return (

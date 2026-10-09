@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useShipments } from '../context/ShipmentContext';
+import { useCustomers } from '../context/CustomerContext';
+import { useNotifications } from '../context/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import QuickShipmentModal from '../components/dashboard/QuickShipmentModal';
 import { 
   Package, Truck, CheckCircle2, Clock, Users, Calendar, TrendingUp, 
   Activity, Plus, Search, RefreshCw, BarChart2, PieChart as PieChartIcon, 
-  ArrowUpRight, ShieldCheck, Sparkles, FileText
+  ArrowUpRight, Sparkles, FileText
 } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -13,22 +16,6 @@ import {
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
-const MONTHLY_DATA = [
-  { month: 'Jan', total: 820, delivered: 780, transit: 40 },
-  { month: 'Feb', total: 950, delivered: 910, transit: 40 },
-  { month: 'Mar', total: 1100, delivered: 1040, transit: 60 },
-  { month: 'Apr', total: 1020, delivered: 980, transit: 40 },
-  { month: 'May', total: 1250, delivered: 1190, transit: 60 },
-  { month: 'Jun', total: 1482, delivered: 1410, transit: 72 },
-];
-
-const STATUS_PIE_DATA = [
-  { name: 'Delivered', value: 994, color: '#10b981' },
-  { name: 'In Transit', value: 385, color: '#f59e0b' },
-  { name: 'Pending', value: 103, color: '#0d9488' },
-  { name: 'Cancelled', value: 24, color: '#ef4444' },
-];
 
 const RECENT_ACTIVITIES = [
   { id: 'act-1', type: 'status', title: 'Parcel Status Updated', desc: 'Shipment #ST-994201 updated to Out for Delivery', time: '10 mins ago', badge: 'Out for Delivery', color: 'bg-amber-100 text-amber-800' },
@@ -40,44 +27,42 @@ const RECENT_ACTIVITIES = [
 
 const DashboardPage = () => {
   const { currentUser } = useAuth();
+  const { metrics, addShipment, refreshShipments, loading: shipmentsLoading } = useShipments();
+  const { totalCustomers, loading: customersLoading } = useCustomers();
+  const { addNotification } = useNotifications();
+
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activityFilter, setActivityFilter] = useState('all');
   const [activities, setActivities] = useState(RECENT_ACTIVITIES);
 
-  const [stats, setStats] = useState({
-    totalShipments: 1482,
-    inTransit: 385,
-    delivered: 994,
-    pending: 103,
-    totalCustomers: 520,
-    todaysShipments: 42,
-    successRate: 98.4,
-  });
-
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsLoading(true);
+    await refreshShipments();
     setTimeout(() => {
       setIsLoading(false);
-      toast.success('Dashboard metrics updated!');
-    }, 600);
+      toast.success('Dashboard metrics dynamically synchronized!');
+    }, 400);
   };
 
-  const handleShipmentCreated = (newShipment) => {
-    setStats((prev) => ({
-      ...prev,
-      totalShipments: prev.totalShipments + 1,
-      pending: prev.pending + 1,
-      todaysShipments: prev.todaysShipments + 1,
-    }));
+  const handleShipmentCreated = async (newShipmentData) => {
+    const created = await addShipment(newShipmentData);
+    
+    // Trigger notification context update
+    addNotification({
+      title: 'New Shipment Created',
+      message: `Shipment #${created.trackingNumber} generated for ${created.receiverName}`,
+      type: 'delivery',
+      trackingNumber: created.trackingNumber
+    });
 
     setActivities((prev) => [
       {
         id: `act-${Date.now()}`,
         type: 'shipment',
         title: 'New Shipment Created',
-        desc: `Shipment #${newShipment.trackingNumber} for ${newShipment.receiverName}`,
+        desc: `Shipment #${created.trackingNumber} for ${created.receiverName}`,
         time: 'Just now',
         badge: 'Created',
         color: 'bg-emerald-100 text-emerald-800'
@@ -90,6 +75,8 @@ const DashboardPage = () => {
     (act) => activityFilter === 'all' || act.type === activityFilter
   );
 
+  const isDataLoading = isLoading || shipmentsLoading || customersLoading;
+
   return (
     <div className="space-y-6 font-sans">
       {/* 1. Header Banner */}
@@ -97,7 +84,7 @@ const DashboardPage = () => {
         <div>
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-xs font-bold mb-1.5">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Module 2: Dashboard Control Center</span>
+            <span>Dynamic Context Powered Dashboard</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Logistics Overview
@@ -115,8 +102,8 @@ const DashboardPage = () => {
             className="p-2.5 rounded-xl glass-input hover:bg-white text-slate-700 font-bold text-sm shadow-xs flex items-center space-x-1.5 cursor-pointer"
             title="Refresh Metrics"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-emerald-600' : ''}`} />
-            <span className="hidden sm:inline">Refresh</span>
+            <RefreshCw className={`w-4 h-4 ${isDataLoading ? 'animate-spin text-emerald-600' : ''}`} />
+            <span className="hidden sm:inline">Sync Metrics</span>
           </motion.button>
 
           <motion.button
@@ -131,8 +118,8 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* 2. Responsive Stat Cards Grid */}
-      {isLoading ? (
+      {/* 2. Responsive Stat Cards Grid - Dynamic values from Context */}
+      {isDataLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
           {[1, 2, 3, 4, 5, 6, 7].map((n) => (
             <div key={n} className="h-28 bg-slate-200/70 rounded-2xl" />
@@ -149,12 +136,12 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <p className="text-2xl font-black text-slate-900">{stats.totalShipments.toLocaleString()}</p>
+              <p className="text-2xl font-black text-slate-900">{metrics.totalShipments}</p>
               <span className="text-xs font-bold text-emerald-600 flex items-center">
-                <ArrowUpRight className="w-4 h-4 mr-0.5" /> +14.2%
+                <ArrowUpRight className="w-4 h-4 mr-0.5" /> Live Sync
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-medium">All time processed shipments</p>
+            <p className="text-[11px] text-slate-400 mt-1 font-medium">All registered shipments</p>
           </motion.div>
 
           {/* Card 2: In Transit Parcels */}
@@ -166,12 +153,12 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <p className="text-2xl font-black text-slate-900">{stats.inTransit}</p>
+              <p className="text-2xl font-black text-slate-900">{metrics.inTransit + metrics.outForDelivery}</p>
               <span className="text-xs font-bold text-amber-600 px-2 py-0.5 bg-amber-50 rounded-md border border-amber-200">
-                Active Live
+                Active Route
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-medium">Parcels currently on route</p>
+            <p className="text-[11px] text-slate-400 mt-1 font-medium">Parcels currently in transit</p>
           </motion.div>
 
           {/* Card 3: Delivered Parcels */}
@@ -183,12 +170,12 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <p className="text-2xl font-black text-slate-900">{stats.delivered}</p>
+              <p className="text-2xl font-black text-slate-900">{metrics.delivered}</p>
               <span className="text-xs font-bold text-emerald-600 flex items-center">
-                <ArrowUpRight className="w-4 h-4 mr-0.5" /> +8.5%
+                <ArrowUpRight className="w-4 h-4 mr-0.5" /> Completed
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-medium">Successfully completed</p>
+            <p className="text-[11px] text-slate-400 mt-1 font-medium">Successfully delivered</p>
           </motion.div>
 
           {/* Card 4: Pending Deliveries */}
@@ -200,10 +187,10 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <p className="text-2xl font-black text-slate-900">{stats.pending}</p>
-              <span className="text-xs font-bold text-teal-600">Awaiting Pickup</span>
+              <p className="text-2xl font-black text-slate-900">{metrics.pending + metrics.pickedUp}</p>
+              <span className="text-xs font-bold text-teal-600">Awaiting Dispatch</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-medium">Queued for dispatch</p>
+            <p className="text-[11px] text-slate-400 mt-1 font-medium">Queued for transport</p>
           </motion.div>
 
           {/* Card 5: Total Customers */}
@@ -215,9 +202,9 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <p className="text-2xl font-black text-slate-900">{stats.totalCustomers}</p>
+              <p className="text-2xl font-black text-slate-900">{totalCustomers}</p>
               <span className="text-xs font-bold text-emerald-600 flex items-center">
-                <ArrowUpRight className="w-4 h-4 mr-0.5" /> +5.2%
+                <ArrowUpRight className="w-4 h-4 mr-0.5" /> Active Clients
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1 font-medium">Registered customer profiles</p>
@@ -232,10 +219,10 @@ const DashboardPage = () => {
               </div>
             </div>
             <div className="mt-4 flex items-baseline justify-between">
-              <p className="text-2xl font-black text-slate-900">{stats.todaysShipments}</p>
+              <p className="text-2xl font-black text-slate-900">{metrics.todaysShipments}</p>
               <span className="text-xs font-bold text-emerald-600">New Today</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-medium">Created in last 24h</p>
+            <p className="text-[11px] text-slate-400 mt-1 font-medium">Created today</p>
           </motion.div>
 
           {/* Card 7: Delivery Success Rate */}
@@ -248,14 +235,14 @@ const DashboardPage = () => {
             </div>
             <div className="mt-4 flex items-baseline justify-between">
               <div className="flex items-baseline space-x-2">
-                <p className="text-3xl font-black text-slate-900">{stats.successRate}%</p>
+                <p className="text-3xl font-black text-slate-900">{metrics.successRate}%</p>
                 <span className="text-xs text-emerald-600 font-bold">Optimal Target</span>
               </div>
               <div className="w-24 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
-                <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${stats.successRate}%` }} />
+                <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${metrics.successRate}%` }} />
               </div>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-medium">98.4% of parcels delivered within SLA timeline</p>
+            <p className="text-[11px] text-slate-400 mt-1 font-medium">Parcels delivered within SLA target</p>
           </motion.div>
         </div>
       )}
@@ -315,10 +302,7 @@ const DashboardPage = () => {
           <motion.button
             whileHover={{ y: -3, scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              toast.info('Downloading Monthly Shipment Performance Report...');
-              setTimeout(() => toast.success('Report downloaded!'), 1000);
-            }}
+            onClick={() => navigate('/reports')}
             className="glass-card p-5 rounded-2xl text-left hover:border-emerald-300 transition-all cursor-pointer group"
           >
             <div className="w-10 h-10 rounded-xl bg-green-600 text-white flex items-center justify-center shadow-md mb-3 group-hover:scale-110 transition-transform">
@@ -327,12 +311,12 @@ const DashboardPage = () => {
             <h3 className="text-sm font-black text-slate-900 group-hover:text-emerald-600 transition-colors">
               Export Performance Report
             </h3>
-            <p className="text-xs text-slate-500 mt-1">Generate PDF summary of monthly logistics analytics.</p>
+            <p className="text-xs text-slate-500 mt-1">Generate PDF & CSV summaries of logistics analytics.</p>
           </motion.button>
         </div>
       </div>
 
-      {/* 4. Analytics Charts Grid */}
+      {/* 4. Analytics Charts Grid - Driven dynamically by Context */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 glass-card p-6 rounded-3xl space-y-4">
           <div className="flex items-center justify-between">
@@ -344,13 +328,13 @@ const DashboardPage = () => {
               <p className="text-xs text-slate-500">Volume of delivered vs in-transit parcels per month</p>
             </div>
             <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              2026 Analytics
+              Live Dynamic Chart
             </span>
           </div>
 
           <div className="h-64 w-full pt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={MONTHLY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={metrics.monthlyChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorDelivered" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
@@ -381,7 +365,7 @@ const DashboardPage = () => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={STATUS_PIE_DATA}
+                  data={metrics.statusPieData}
                   cx="50%"
                   cy="50%"
                   innerRadius={50}
@@ -389,7 +373,7 @@ const DashboardPage = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {STATUS_PIE_DATA.map((entry, index) => (
+                  {metrics.statusPieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -399,10 +383,10 @@ const DashboardPage = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
-            {STATUS_PIE_DATA.map((item, idx) => (
+            {metrics.statusPieData.map((item, idx) => (
               <div key={idx} className="flex items-center space-x-2">
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                <span className="text-slate-600 font-medium">{item.name}:</span>
+                <span className="text-slate-600 font-medium truncate">{item.name}:</span>
                 <span className="font-bold text-slate-900">{item.value}</span>
               </div>
             ))}
