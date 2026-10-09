@@ -14,7 +14,8 @@ import ShipmentViewPage from '../pages/ShipmentViewPage';
 import CustomersPage from '../pages/CustomersPage';
 import ParcelTrackingPage from '../pages/ParcelTrackingPage';
 import DeliveryStatusPage from '../pages/DeliveryStatusPage';
-import { NotificationsPage, ReportsPage } from '../pages/OtherPages';
+import NotificationsPage from '../pages/NotificationsPage';
+import { ReportsPage } from '../pages/OtherPages';
 
 const AppRoutes = () => {
   return (

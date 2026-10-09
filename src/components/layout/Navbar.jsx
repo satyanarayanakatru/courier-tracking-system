@@ -7,11 +7,28 @@ import {
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { getNotifications } from '../../services/notificationService';
+
 const Navbar = ({ onToggleSidebar }) => {
   const { currentUser, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  const updateUnread = () => {
+    const list = getNotifications();
+    const count = list.filter((n) => n.unread).length;
+    setUnreadCount(count);
+  };
+
+  useEffect(() => {
+    updateUnread();
+    window.addEventListener('notifications_updated', updateUnread);
+    return () => {
+      window.removeEventListener('notifications_updated', updateUnread);
+    };
+  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -78,10 +95,16 @@ const Navbar = ({ onToggleSidebar }) => {
         <motion.button 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={() => navigate('/notifications')}
           className="relative p-2 rounded-xl text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer"
+          title="Notification Center"
         >
           <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-emerald-600 rounded-full ring-2 ring-white animate-pulse" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ring-2 ring-white animate-pulse">
+              {unreadCount}
+            </span>
+          )}
         </motion.button>
 
         <div className="h-6 w-px bg-slate-200 hidden sm:block" />
